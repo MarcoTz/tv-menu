@@ -1,38 +1,48 @@
 use std::{collections::HashMap, fs::read_to_string, path::PathBuf};
 
+mod config_builder;
+mod contents;
 mod errors;
+use config_builder::from_contents;
+pub use config_builder::{ConfigBuilder, Key, Section};
+use contents::{ConfigContents, ConfigSection};
 pub use errors::Error;
 
-pub struct ConfigContents {
-    values: HashMap<String, String>,
-    path: PathBuf,
+pub fn parse_file<Builder>(path: PathBuf) -> Result<Builder::Output, Builder::Error>
+where
+    Builder: ConfigBuilder,
+{
+    let contents = contents_from_file(path)?;
+    from_contents::<Builder>(contents)
 }
 
-impl ConfigContents {
-    pub fn remove_key(&mut self, key: &str) -> Result<String, Error> {
-        self.values
-            .remove(key)
-            .ok_or(Error::missing_key(&self.path, key))
-    }
-}
-
-pub fn parse_file(path: PathBuf) -> Result<ConfigContents, Error> {
+fn contents_from_file(path: PathBuf) -> Result<ConfigContents, Error> {
     let path_contents = read_to_string(&path).map_err(|err| Error::read_file(err, &path))?;
-    parse_string(path_contents, path)
+    contents_from_string(path_contents, path)
 }
 
-pub fn parse_string(input: String, path: PathBuf) -> Result<ConfigContents, Error> {
-    let mut contents = HashMap::new();
+fn contents_from_string(input: String, path: PathBuf) -> Result<ConfigContents, Error> {
+    let mut sections = HashMap::new();
+    let mut values = HashMap::new();
+    let mut current_section = "".to_owned();
     for (num, line) in input.lines().enumerate() {
+        if line.starts_with('[') && line.ends_with(']') {
+            if !values.is_empty() {
+                sections.insert(current_section, ConfigSection { values });
+            }
+            values = HashMap::new();
+            current_section = line.replace(['[', ']'], "");
+            continue;
+        }
         let (key, val) = line.split_once("=").ok_or(Error::format(
             &path,
             num,
             "Entries need to be in key=value format",
         ))?;
-        contents.insert(key.trim().to_owned(), val.trim().to_owned());
+        values.insert(key.trim().to_owned(), val.trim().to_owned());
     }
-    Ok(ConfigContents {
-        values: contents,
-        path,
-    })
+    if !values.is_empty() {
+        sections.insert(current_section, ConfigSection { values });
+    }
+    Ok(ConfigContents { path, sections })
 }

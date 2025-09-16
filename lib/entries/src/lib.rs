@@ -1,8 +1,10 @@
 use parser::parse_file;
-use std::{path::PathBuf, process::Command};
+use std::path::PathBuf;
 
 mod errors;
+mod parse;
 pub use errors::Error;
+use parse::EntryBuilder;
 
 pub struct MenuEntry {
     pub title: String,
@@ -11,9 +13,6 @@ pub struct MenuEntry {
 
 impl MenuEntry {
     pub fn from_file(path: PathBuf) -> Result<MenuEntry, Error> {
-        let mut contents = parse_file(path)?;
-        let title = contents.remove_key("title")?;
-        let launch = contents.remove_key("launch")?;
-        Ok(MenuEntry { title, launch })
+        parse_file::<EntryBuilder>(path)
     }
 }

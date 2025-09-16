@@ -1,6 +1,7 @@
-use eframe;
-use entries;
-use std::{fmt, io, path::PathBuf};
+use std::{
+    fmt, io,
+    path::{Path, PathBuf},
+};
 
 #[derive(Debug)]
 pub enum Error {
@@ -11,9 +12,9 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn read_dir(err: io::Error, path: &PathBuf) -> Error {
+    pub fn read_dir(err: io::Error, path: &Path) -> Error {
         Error::ReadDir {
-            path: path.clone(),
+            path: path.to_path_buf(),
             reason: err.to_string(),
         }
     }

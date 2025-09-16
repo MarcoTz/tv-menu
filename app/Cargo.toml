@@ -8,4 +8,5 @@ name = "tvmenu"
 path = "src/main.rs"
 
 [dependencies]
+entries = { path = "../lib/entries" }
 eframe = { version="0.32", features=["default"] }

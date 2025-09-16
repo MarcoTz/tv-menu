@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "app",
+    "lib/entries",
 ]
 
 resolver = "2"

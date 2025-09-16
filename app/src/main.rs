@@ -48,9 +48,16 @@ impl eframe::App for MyApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 for entry in self.entries.iter() {
-                    egui::Frame::NONE.fill(egui::Color32::RED).show(ui, |ui| {
-                        ui.label(format!("{}\n{}", entry.title, entry.launch))
-                    });
+                    egui::Frame::NONE
+                        .fill(self.config.entry_background)
+                        .corner_radius(self.config.entry_radius)
+                        .inner_margin(self.config.entry_padding)
+                        .show(ui, |ui| {
+                            ui.colored_label(
+                                self.config.entry_text_color,
+                                egui::RichText::new(&entry.title).size(self.config.entry_text_size),
+                            )
+                        });
                 }
             });
         });

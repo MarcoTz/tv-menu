@@ -4,6 +4,7 @@ use std::fmt;
 pub enum Error {
     Parse(parser::Error),
     InvalidColor(String),
+    InvalidNumber(String),
 }
 
 impl fmt::Display for Error {
@@ -11,6 +12,7 @@ impl fmt::Display for Error {
         match self {
             Error::Parse(err) => err.fmt(f),
             Error::InvalidColor(cl) => write!(f, "Not a valid color: {cl}"),
+            Error::InvalidNumber(s) => write!(f, "Not a valid number: {s}"),
         }
     }
 }

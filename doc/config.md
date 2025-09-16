@@ -5,6 +5,11 @@ The config file defines the app configuration. This contains a list of
 supported
 
 - `entry-background:Color` (required) - The background color of an entry
+- `entry-text-color:Color` (required) - The text color of an entry
+- `entry-radius:u8` - The border radius of an entry, defaults to `0`
+- `entry-padding:i8` - The Padding between text and the bounding box, defaults
+  to `0`
+- `entry-text-size:f32` - The text size of entries, defaults to `12`
 
 ## Colors
 

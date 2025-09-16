@@ -1,5 +1,5 @@
 use parser::parse_file;
-use std::path::PathBuf;
+use std::{path::PathBuf, process::Command};
 
 mod errors;
 pub use errors::Error;
@@ -15,5 +15,9 @@ impl MenuEntry {
         let title = contents.remove_key("title")?;
         let launch = contents.remove_key("launch")?;
         Ok(MenuEntry { title, launch })
+    }
+
+    pub fn launch_command(&self) -> Command {
+        Command::new(&self.launch)
     }
 }

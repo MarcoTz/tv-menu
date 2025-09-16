@@ -11,7 +11,7 @@ pub struct AppConfig {
     pub entry_background: Color32,
     pub entry_text_color: Color32,
     pub entry_radius: u8,
-    pub entry_padding: i8,
+    pub entry_padding: f32,
     pub entry_text_size: f32,
 }
 
@@ -28,9 +28,9 @@ impl AppConfig {
             .map_err(|_| Error::InvalidNumber(radius_str))?;
         let padding_str = contents
             .remove_key("entry-padding")
-            .unwrap_or("0".to_owned());
+            .unwrap_or("0.0".to_owned());
         let entry_padding = padding_str
-            .parse::<i8>()
+            .parse::<f32>()
             .map_err(|_| Error::InvalidNumber(padding_str))?;
         let entry_text_size_str = contents
             .remove_key("entry-text-size")

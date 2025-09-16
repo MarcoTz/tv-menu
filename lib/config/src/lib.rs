@@ -20,6 +20,7 @@ pub struct EntryConfig {
 pub struct AppConfig {
     pub entries: EntryConfig,
     pub background: Color32,
+    pub padding: i8,
 }
 
 impl AppConfig {

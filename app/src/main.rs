@@ -44,7 +44,11 @@ fn main() -> Result<(), Error> {
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default()
-            .frame(egui::Frame::NONE.fill(self.config.background))
+            .frame(
+                egui::Frame::NONE
+                    .fill(self.config.background)
+                    .inner_margin(self.config.padding),
+            )
             .show(ctx, |ui| {
                 ui.horizontal(|ui| {
                     for entry in self.entries.iter() {

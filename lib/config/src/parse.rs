@@ -5,6 +5,7 @@ use parser::{ConfigBuilder, Key, Section};
 #[derive(Default)]
 pub struct AppConfigBuilder {
     entry_background: Option<Color32>,
+    padding: Option<i8>,
     text_color: Option<Color32>,
     border_radius: Option<u8>,
     text_size: Option<f32>,
@@ -23,7 +24,10 @@ impl ConfigBuilder for AppConfigBuilder {
 
     fn section_keys(section: &str) -> Result<Vec<Key>, Self::Error> {
         match section {
-            "" => Ok(vec![Key::new("background", true)]),
+            "" => Ok(vec![
+                Key::new("background", true),
+                Key::new("padding", true),
+            ]),
             "Entries" => Ok(vec![
                 Key::new("background", true),
                 Key::new("text-color", true),
@@ -39,6 +43,13 @@ impl ConfigBuilder for AppConfigBuilder {
     fn parse_value(&mut self, section: &str, key: &str, value: &str) -> Result<(), Self::Error> {
         match (section, key) {
             ("", "background") => self.background = Some(parse_color(value)?),
+            ("", "padding") => {
+                self.padding = Some(
+                    value
+                        .parse::<i8>()
+                        .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
+                )
+            }
             ("Entries", "background") => self.entry_background = Some(parse_color(value)?),
             ("Entries", "text-color") => self.text_color = Some(parse_color(value)?),
             ("Entries", "border-radius") => {
@@ -77,6 +88,7 @@ impl ConfigBuilder for AppConfigBuilder {
     fn build(self) -> Self::Output {
         AppConfig {
             background: self.background.unwrap_or(Color32::BLACK),
+            padding: self.padding.unwrap_or(0),
             entries: EntryConfig {
                 background: self.entry_background.unwrap_or(Color32::TRANSPARENT),
                 text_color: self.text_color.unwrap_or(Color32::BLACK),

@@ -6,6 +6,7 @@ use std::{fmt, io, path::PathBuf};
 pub enum Error {
     ReadDir { path: PathBuf, reason: String },
     Entries(entries::Error),
+    Config(config::Error),
     EFrame(eframe::Error),
 }
 
@@ -23,6 +24,7 @@ impl fmt::Display for Error {
         match self {
             Error::ReadDir { path, reason } => write!(f, "Could not read dir {path:?}:\n{reason}"),
             Error::Entries(err) => err.fmt(f),
+            Error::Config(err) => err.fmt(f),
             Error::EFrame(err) => err.fmt(f),
         }
     }
@@ -31,6 +33,12 @@ impl fmt::Display for Error {
 impl From<entries::Error> for Error {
     fn from(err: entries::Error) -> Error {
         Error::Entries(err)
+    }
+}
+
+impl From<config::Error> for Error {
+    fn from(err: config::Error) -> Error {
+        Error::Config(err)
     }
 }
 

@@ -1,0 +1,8 @@
+[package]
+name = "config"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+parser = { path = "../parser" }
+eframe = { version="0.32", features=["default"] }

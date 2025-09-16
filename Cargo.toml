@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "app",
+]
+
+resolver = "2"
+default-members = ["app"]

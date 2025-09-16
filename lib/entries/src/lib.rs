@@ -16,8 +16,4 @@ impl MenuEntry {
         let launch = contents.remove_key("launch")?;
         Ok(MenuEntry { title, launch })
     }
-
-    pub fn launch_command(&self) -> Command {
-        Command::new(&self.launch)
-    }
 }

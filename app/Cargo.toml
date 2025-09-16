@@ -10,4 +10,5 @@ path = "src/main.rs"
 [dependencies]
 entries = { path = "../lib/entries" }
 config = { path = "../lib/config" }
+widgets = { path = "../lib/widgets" }
 eframe = { version="0.32", features=["default"] }

@@ -1,7 +1,8 @@
 use config::AppConfig;
-use eframe::egui;
+use eframe::{egui, egui::Widget};
 use entries::MenuEntry;
 use std::{fs::read_dir, path::PathBuf};
+use widgets::EntryWidget;
 
 mod errors;
 use errors::Error;
@@ -48,22 +49,7 @@ impl eframe::App for MyApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 for entry in self.entries.iter() {
-                    let button = egui::Button::new(
-                        egui::RichText::new(&entry.title)
-                            .size(self.config.entry_text_size)
-                            .color(self.config.entry_text_color),
-                    )
-                    .fill(self.config.entry_background)
-                    .corner_radius(self.config.entry_radius);
-                    if ui
-                        .add_sized(
-                            (self.config.entry_padding, self.config.entry_padding),
-                            button,
-                        )
-                        .clicked()
-                    {
-                        entry.launch_command().spawn().unwrap();
-                    };
+                    EntryWidget::new(&self.config, entry).ui(ui);
                 }
             });
         });

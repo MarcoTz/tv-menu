@@ -11,8 +11,9 @@ pub struct AppConfig {
     pub entry_background: Color32,
     pub entry_text_color: Color32,
     pub entry_radius: u8,
-    pub entry_padding: f32,
     pub entry_text_size: f32,
+    pub entry_width: Option<f32>,
+    pub entry_height: Option<f32>,
 }
 
 impl AppConfig {
@@ -26,24 +27,29 @@ impl AppConfig {
         let entry_radius = radius_str
             .parse::<u8>()
             .map_err(|_| Error::InvalidNumber(radius_str))?;
-        let padding_str = contents
-            .remove_key("entry-padding")
-            .unwrap_or("0.0".to_owned());
-        let entry_padding = padding_str
-            .parse::<f32>()
-            .map_err(|_| Error::InvalidNumber(padding_str))?;
         let entry_text_size_str = contents
             .remove_key("entry-text-size")
             .unwrap_or("12.0".to_owned());
         let entry_text_size = entry_text_size_str
             .parse::<f32>()
             .map_err(|_| Error::InvalidNumber(entry_text_size_str))?;
+        let entry_width = contents
+            .remove_key("entry-width")
+            .ok()
+            .map(|s| s.parse::<f32>().map_err(|_| Error::InvalidNumber(s)))
+            .transpose()?;
+        let entry_height = contents
+            .remove_key("entry-height")
+            .ok()
+            .map(|s| s.parse::<f32>().map_err(|_| Error::InvalidNumber(s)))
+            .transpose()?;
         Ok(AppConfig {
             entry_background,
             entry_text_color,
             entry_radius,
-            entry_padding,
             entry_text_size,
+            entry_width,
+            entry_height,
         })
     }
 }

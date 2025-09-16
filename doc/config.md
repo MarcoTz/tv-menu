@@ -7,8 +7,10 @@ supported
 - `entry-background:Color` (required) - The background color of an entry
 - `entry-text-color:Color` (required) - The text color of an entry
 - `entry-radius:u8` - The border radius of an entry, defaults to `0`
-- `entry-padding:f32` - The Padding between text and the bounding box, defaults
-  to `0`
+- `entry-height:f32` - The height of an entry, only works if `entry-width` is
+  also provided
+- `entry-width:f32` - The width of an entry, only works if `entry-height` is
+  also provided
 - `entry-text-size:f32` - The text size of entries, defaults to `12`
 
 ## Colors

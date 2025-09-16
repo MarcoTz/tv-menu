@@ -26,6 +26,10 @@ fn contents_from_string(input: String, path: PathBuf) -> Result<ConfigContents, 
     let mut values = HashMap::new();
     let mut current_section = "".to_owned();
     for (num, line) in input.lines().enumerate() {
+        let line = remove_comment(line);
+        if line.is_empty() {
+            continue;
+        }
         if line.starts_with('[') && line.ends_with(']') {
             if !values.is_empty() {
                 sections.insert(current_section, ConfigSection { values });
@@ -45,4 +49,11 @@ fn contents_from_string(input: String, path: PathBuf) -> Result<ConfigContents, 
         sections.insert(current_section, ConfigSection { values });
     }
     Ok(ConfigContents { path, sections })
+}
+
+fn remove_comment(line: &str) -> &str {
+    match line.split_once("//") {
+        Some((start, _)) => start,
+        None => line,
+    }
 }

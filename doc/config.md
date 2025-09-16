@@ -2,9 +2,18 @@
 
 The config file defines the app configuration. The config is written in a
 toml-like format, that is, a list of `key=value` pairs separated into different
-sections starting with `[Section]` supported
+sections starting with `[Section]` supported.
+
+Anyting after a `//` in a line will be ignored as a comment
 
 ## Sections
+
+### Empty
+
+The "Empty" Section is the section starting the config file before any other
+sections begin. Here, the following keys are supported
+
+- `background:Color` - The background color of the window, defaults to black
 
 ### `[Entries]`
 

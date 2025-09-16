@@ -43,12 +43,14 @@ fn main() -> Result<(), Error> {
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            ui.horizontal(|ui| {
-                for entry in self.entries.iter() {
-                    EntryWidget::new(&self.config, entry).ui(ui);
-                }
+        egui::CentralPanel::default()
+            .frame(egui::Frame::NONE.fill(self.config.background))
+            .show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    for entry in self.entries.iter() {
+                        EntryWidget::new(&self.config, entry).ui(ui);
+                    }
+                });
             });
-        });
     }
 }

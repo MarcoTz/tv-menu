@@ -30,12 +30,12 @@ impl<'a> EntryWidget<'a> {
         EntryWidget {
             title: &entry.title,
             launch: &entry.launch,
-            text_size: conf.entry_text_size,
-            text_color: conf.entry_text_color,
-            background: conf.entry_background,
-            radius: conf.entry_radius,
-            width: conf.entry_width,
-            height: conf.entry_height,
+            text_size: conf.entries.text_size,
+            text_color: conf.entries.text_color,
+            background: conf.entries.background,
+            radius: conf.entries.border_radius,
+            width: conf.entries.width,
+            height: conf.entries.height,
         }
     }
 }

@@ -5,7 +5,7 @@ use std::process::Command;
 
 pub struct EntryWidget<'a> {
     title: &'a str,
-    launch_command: &'a str,
+    launch: &'a str,
     text_size: f32,
     text_color: Color32,
     background: Color32,
@@ -15,10 +15,21 @@ pub struct EntryWidget<'a> {
 }
 
 impl<'a> EntryWidget<'a> {
+    pub fn launch_command(&self) -> Command {
+        let mut parts = self.launch.split(" ");
+        let mut cmd = Command::new(parts.next().unwrap());
+        for arg in parts {
+            cmd.arg(arg);
+        }
+        cmd
+    }
+}
+
+impl<'a> EntryWidget<'a> {
     pub fn new(conf: &'a AppConfig, entry: &'a MenuEntry) -> EntryWidget<'a> {
         EntryWidget {
             title: &entry.title,
-            launch_command: &entry.launch,
+            launch: &entry.launch,
             text_size: conf.entry_text_size,
             text_color: conf.entry_text_color,
             background: conf.entry_background,
@@ -44,7 +55,10 @@ impl<'a> Widget for EntryWidget<'a> {
             ui.add(button)
         };
         if resp.clicked() {
-            Command::new(self.launch_command).spawn().unwrap();
+            match self.launch_command().spawn() {
+                Ok(child) => std::mem::forget(child),
+                Err(err) => eprintln!("Could not spawn child process {}:\n{err}", self.launch),
+            };
         }
         resp
     }

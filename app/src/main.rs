@@ -1,7 +1,7 @@
 use config::AppConfig;
 use eframe::{egui, egui::Widget};
 use entries::MenuEntry;
-use std::{fs::read_dir, path::PathBuf};
+use std::path::PathBuf;
 use widgets::EntryWidget;
 
 mod errors;
@@ -24,13 +24,10 @@ impl MyApp {
 fn main() -> Result<(), Error> {
     let entry_path = PathBuf::from(ENTRY_PATH);
     let config_path = PathBuf::from(CONFIG_PATH);
-    let mut entries = vec![];
-    for path_entry in read_dir(ENTRY_PATH).map_err(|err| Error::read_dir(err, &entry_path))? {
-        let path_entry = path_entry.map_err(|err| Error::read_dir(err, &entry_path))?;
-        let menu_entry = MenuEntry::from_file(path_entry.path())?;
-        entries.push(menu_entry);
-    }
+
+    let entries = MenuEntry::load_dir(entry_path)?;
     let config = AppConfig::from_file(config_path)?;
+
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
         ..Default::default()

@@ -1,5 +1,5 @@
 use parser::parse_file;
-use std::path::PathBuf;
+use std::{fs::read_dir, path::PathBuf};
 
 mod errors;
 mod parse;
@@ -14,5 +14,15 @@ pub struct MenuEntry {
 impl MenuEntry {
     pub fn from_file(path: PathBuf) -> Result<MenuEntry, Error> {
         parse_file::<EntryBuilder>(path)
+    }
+
+    pub fn load_dir(path: PathBuf) -> Result<Vec<MenuEntry>, Error> {
+        let mut entries = vec![];
+        for path_entry in read_dir(&path).map_err(|err| Error::read_dir(err, &path))? {
+            let path_entry = path_entry.map_err(|err| Error::read_dir(err, &path))?;
+            let menu_entry = MenuEntry::from_file(path_entry.path())?;
+            entries.push(menu_entry);
+        }
+        Ok(entries)
     }
 }

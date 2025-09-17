@@ -1,5 +1,5 @@
 use parser::parse_file;
-use std::{fs::read_dir, path::PathBuf};
+use std::{fs::read_dir, path::PathBuf, process::Command};
 
 mod errors;
 mod parse;
@@ -29,4 +29,13 @@ impl MenuEntry {
         }
         Ok(entries)
     }
+}
+
+pub fn launch_command(cmd: &str) -> Command {
+    let mut parts = cmd.split(" ");
+    let mut cmd = Command::new(parts.next().unwrap());
+    for arg in parts {
+        cmd.arg(arg);
+    }
+    cmd
 }

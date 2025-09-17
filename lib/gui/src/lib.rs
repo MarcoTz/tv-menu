@@ -1,44 +1,90 @@
 use config::AppConfig;
-use entries::MenuEntry;
-use iced::{Color, widget::Row};
-use std::path::PathBuf;
+use entries::launch_command;
+use iced::{
+    Color, Task, application, application::Appearance, event, event::Event, widget::Row, window,
+    window::Settings,
+};
+use std::{path::PathBuf, process::exit};
 
 mod errors;
 mod menu_widget;
+mod state;
 pub use errors::Error;
 use menu_widget::EntryWidget;
+use state::{MenuState, Message};
 
 pub const ENTRY_PATH: &str = "entries";
 pub const CONFIG_PATH: &str = "tvmenu.conf";
 
-#[derive(Debug, Clone)]
-pub enum Message {
-    Launch(String),
-}
-pub struct MenuState {
-    pub config: AppConfig,
-    entries: Vec<MenuEntry>,
-}
-
-impl MenuState {
-    pub fn init() -> Result<MenuState, Error> {
-        let entry_path = PathBuf::from(ENTRY_PATH);
-        let config_path = PathBuf::from(CONFIG_PATH);
-
-        let entries = MenuEntry::load_dir(entry_path)?;
-        let config = AppConfig::from_file(config_path)?;
-        Ok(MenuState { config, entries })
+pub fn run_app() -> Result<(), Error> {
+    let mut config = AppConfig::from_file(PathBuf::from(CONFIG_PATH))?;
+    let mut window_settings = Settings::default();
+    if config.height != 0.0 {
+        window_settings.size.height = config.height;
+    } else {
+        config.height = window_settings.size.height;
+    }
+    if config.width != 0.0 {
+        window_settings.size.width = config.width;
+    } else {
+        config.width = window_settings.size.width;
     }
 
-    pub fn view(&self) -> Row<'_, Message> {
-        let mut entry_elements = vec![];
-        for entry in self.entries.iter() {
-            let widget = EntryWidget::new(entry, &self.config);
-            let button = widget.view();
-            entry_elements.push(button.into());
+    let (w, h) = (window_settings.size.width, window_settings.size.height);
+
+    let app = application("TV Menu", update, view)
+        .style(|state, _| Appearance {
+            background_color: to_color(&state.config.background),
+            text_color: to_color(&state.config.text_color),
+        })
+        .centered()
+        .subscription(|_| {
+            event::listen_with(|event, _, _| match event {
+                Event::Window(window::Event::Resized(size)) => Some(Message::Resized {
+                    width: size.width,
+                    height: size.height,
+                }),
+                _ => None,
+            })
+        });
+
+    app.run_with(move || setup_app(config, w, h))?;
+    Ok(())
+}
+
+fn setup_app(
+    config: AppConfig,
+    window_width: f32,
+    window_height: f32,
+) -> (MenuState, Task<Message>) {
+    let state = report_err(MenuState::from_config(config, window_width, window_height));
+    (state, Task::none())
+}
+
+fn report_err<T, E>(res: Result<T, E>) -> T
+where
+    E: std::error::Error,
+{
+    match res {
+        Ok(t) => t,
+        Err(err) => {
+            eprintln!("App encountered an error:\n{err}");
+            exit(1)
         }
-        Row::from_vec(entry_elements).padding(self.config.padding)
     }
+}
+
+fn update(state: &mut MenuState, msg: Message) {
+    match msg {
+        Message::Launch(cmd) => match launch_command(&cmd).spawn() {
+            Ok(child) => std::mem::forget(child),
+            Err(err) => eprintln!("Could not launch {cmd}:\n{err}"),
+        },
+        Message::Resized { height, width } => state.window_size = (width, height),
+    }
+}
+fn view(state: &MenuState) -> Row<'_, Message> {
+    state.view()
 }
 
 pub fn to_color(color: &config::Color) -> Color {

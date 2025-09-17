@@ -17,6 +17,8 @@ sections begin. Here, the following keys are supported
 - `text-color:Color` - The text color of the window, this does not apply to,
   defaults to white entries
 - `padding:f32` - The padding of the window, defaults to `0`
+- `columns:u64` - Maximum number of columns per row, defaults to the current
+  window size
 
 ### `[Entries]`
 

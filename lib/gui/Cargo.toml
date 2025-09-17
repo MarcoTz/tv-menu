@@ -1,0 +1,9 @@
+[package]
+name = "gui"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+config = { path = "../config" }
+entries = { path = "../entries" }
+iced= { version="0.13", features = [ "image" ] }

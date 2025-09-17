@@ -1337,6 +1337,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "gui"
+version = "0.1.0"
+dependencies = [
+ "config",
+ "entries",
+ "iced",
+]
+
+[[package]]
 name = "guillotiere"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3222,6 +3231,7 @@ version = "0.1.0"
 dependencies = [
  "config",
  "entries",
+ "gui",
  "iced",
 ]
 

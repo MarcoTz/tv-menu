@@ -1,5 +1,5 @@
 use parser::parse_file;
-use std::{fs::read_dir, path::PathBuf, process::Command};
+use std::{fs::read_dir, path::PathBuf};
 
 mod errors;
 mod parse;

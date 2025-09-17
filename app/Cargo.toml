@@ -8,6 +8,7 @@ name = "tvmenu"
 path = "src/main.rs"
 
 [dependencies]
-iced= { version="0.13", features = [ "image","advanced" ] }
+iced= { version="0.13", features = [ "image" ] }
+gui = { path = "../lib/gui" }
 entries = { path = "../lib/entries" }
 config = { path = "../lib/config" }

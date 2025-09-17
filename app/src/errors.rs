@@ -4,7 +4,7 @@ use std::fmt;
 pub enum Error {
     Entries(entries::Error),
     Config(config::Error),
-    EFrame(eframe::Error),
+    Iced(iced::Error),
 }
 
 impl fmt::Display for Error {
@@ -12,7 +12,7 @@ impl fmt::Display for Error {
         match self {
             Error::Entries(err) => err.fmt(f),
             Error::Config(err) => err.fmt(f),
-            Error::EFrame(err) => err.fmt(f),
+            Error::Iced(err) => err.fmt(f),
         }
     }
 }
@@ -29,8 +29,8 @@ impl From<config::Error> for Error {
     }
 }
 
-impl From<eframe::Error> for Error {
-    fn from(err: eframe::Error) -> Error {
-        Error::EFrame(err)
+impl From<iced::Error> for Error {
+    fn from(err: iced::Error) -> Error {
+        Error::Iced(err)
     }
 }

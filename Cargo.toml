@@ -4,7 +4,6 @@ members = [
     "lib/entries",
     "lib/config",
     "lib/parser",
-    "lib/widgets",
 ]
 
 resolver = "2"

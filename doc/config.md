@@ -14,6 +14,9 @@ The "Empty" Section is the section starting the config file before any other
 sections begin. Here, the following keys are supported
 
 - `background:Color` - The background color of the window, defaults to black
+- `text-color:Color` - The text color of the window, this does not apply to,
+  defaults to white entries
+- `padding:f32` - The padding of the window, defaults to `0`
 
 ### `[Entries]`
 

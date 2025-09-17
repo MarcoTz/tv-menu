@@ -1,7 +1,55 @@
 use crate::Error;
-use eframe::egui::Color32;
 
-pub fn parse_color(input: &str) -> Result<Color32, Error> {
+#[derive(PartialEq, Eq, Debug)]
+pub struct Color {
+    pub red: u8,
+    pub green: u8,
+    pub blue: u8,
+    pub alpha: u8,
+}
+
+impl Color {
+    pub const BLACK: Color = Color {
+        red: 0,
+        green: 0,
+        blue: 0,
+        alpha: 0,
+    };
+
+    pub const WHITE: Color = Color {
+        red: 255,
+        green: 255,
+        blue: 255,
+        alpha: 0,
+    };
+
+    pub const TRANSPARENT: Color = Color {
+        red: 0,
+        green: 0,
+        blue: 0,
+        alpha: 255,
+    };
+
+    pub fn rgb(r: u8, g: u8, b: u8) -> Color {
+        Color {
+            red: r,
+            green: g,
+            blue: b,
+            alpha: 255,
+        }
+    }
+
+    pub fn rgba(r: u8, g: u8, b: u8, a: u8) -> Color {
+        Color {
+            red: r,
+            green: g,
+            blue: b,
+            alpha: a,
+        }
+    }
+}
+
+pub fn parse_color(input: &str) -> Result<Color, Error> {
     if input.starts_with("#") {
         parse_hex(input)
     } else if input.starts_with("rgba") {
@@ -13,7 +61,7 @@ pub fn parse_color(input: &str) -> Result<Color32, Error> {
     }
 }
 
-fn parse_hex(input: &str) -> Result<Color32, Error> {
+fn parse_hex(input: &str) -> Result<Color, Error> {
     if input.len() != 7 && input.len() != 9 {
         return Err(Error::InvalidColor(input.to_owned()));
     }
@@ -33,9 +81,7 @@ fn parse_hex(input: &str) -> Result<Color32, Error> {
         hex_alpha = hex_vals.remove(0) * 16;
         hex_alpha += hex_vals.remove(0);
     }
-    Ok(Color32::from_rgba_unmultiplied(
-        hex_red, hex_blue, hex_green, hex_alpha,
-    ))
+    Ok(Color::rgba(hex_red, hex_blue, hex_green, hex_alpha))
 }
 
 fn hex_to_digit(ch: char) -> Result<u8, Error> {
@@ -60,7 +106,7 @@ fn hex_to_digit(ch: char) -> Result<u8, Error> {
     }
 }
 
-fn parse_rgba(input: &str) -> Result<Color32, Error> {
+fn parse_rgba(input: &str) -> Result<Color, Error> {
     let mut color = input.replace("rgba(", "");
     color.remove(color.len() - 1);
     let mut parts = color.split(",");
@@ -84,10 +130,10 @@ fn parse_rgba(input: &str) -> Result<Color32, Error> {
         .ok_or(Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
-    Ok(Color32::from_rgba_unmultiplied(red, green, blue, alpha))
+    Ok(Color::rgba(red, green, blue, alpha))
 }
 
-fn parse_rgb(input: &str) -> Result<Color32, Error> {
+fn parse_rgb(input: &str) -> Result<Color, Error> {
     let mut color = input.replace("rgb(", "");
     color.remove(color.len() - 1);
     let mut parts = color.split(",");
@@ -106,46 +152,45 @@ fn parse_rgb(input: &str) -> Result<Color32, Error> {
         .ok_or(Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
-    Ok(Color32::from_rgb(red, green, blue))
+    Ok(Color::rgb(red, green, blue))
 }
 
 #[cfg(test)]
 mod color_tests {
-    use super::parse_color;
-    use eframe::egui::Color32;
+    use super::{Color, parse_color};
 
     #[test]
     fn parse_hex() {
         let result = parse_color("#ffffff").unwrap();
-        let expected = Color32::from_rgb(255, 255, 255);
+        let expected = Color::rgb(255, 255, 255);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_hex_upper() {
         let result = parse_color("#FFFFFF").unwrap();
-        let expected = Color32::from_rgb(255, 255, 255);
+        let expected = Color::rgb(255, 255, 255);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_hex_alpha() {
         let result = parse_color("#aaaaaaaa").unwrap();
-        let expected = Color32::from_rgba_unmultiplied(170, 170, 170, 170);
+        let expected = Color::rgba(170, 170, 170, 170);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_rgba() {
         let result = parse_color("rgba(255,255,255,255)").unwrap();
-        let expected = Color32::from_rgba_unmultiplied(255, 255, 255, 255);
+        let expected = Color::rgba(255, 255, 255, 255);
         assert_eq!(result, expected)
     }
 
     #[test]
     fn parse_rbg() {
         let result = parse_color("rgb(255,255,255)").unwrap();
-        let expected = Color32::from_rgb(255, 255, 255);
+        let expected = Color::rgb(255, 255, 255);
         assert_eq!(result, expected)
     }
 }

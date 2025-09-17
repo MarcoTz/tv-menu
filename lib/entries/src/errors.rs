@@ -8,6 +8,7 @@ pub enum Error {
     ReadDir { path: PathBuf, reason: String },
     UnknownSection(String),
     UnknownKey(String),
+    IconNotFound(String),
     Parser(parser::Error),
 }
 
@@ -26,6 +27,7 @@ impl fmt::Display for Error {
             Error::ReadDir { path, reason } => write!(f, "Could not read dir {path:?}:\n{reason}"),
             Error::UnknownSection(sec) => write!(f, "Menu Entry cannot have section {sec}"),
             Error::UnknownKey(key) => write!(f, "Menu Entry cannot have key {key}"),
+            Error::IconNotFound(name) => write!(f, "Could not find icon {name}"),
             Error::Parser(err) => err.fmt(f),
         }
     }

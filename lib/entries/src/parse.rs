@@ -1,10 +1,12 @@
-use crate::{Error, MenuEntry};
+use crate::{Error, ICON_DIRS, MenuEntry};
 use parser::{ConfigBuilder, Key, Section};
+use std::{ffi::OsStr, fs::read_dir, path::PathBuf};
 
 #[derive(Default)]
 pub struct EntryBuilder {
     title: Option<String>,
     launch: Option<String>,
+    icon: Option<PathBuf>,
 }
 
 impl ConfigBuilder for EntryBuilder {
@@ -17,7 +19,11 @@ impl ConfigBuilder for EntryBuilder {
 
     fn section_keys(section: &str) -> Result<Vec<Key>, Self::Error> {
         if section.is_empty() {
-            Ok(vec![Key::new("title", false), Key::new("launch", false)])
+            Ok(vec![
+                Key::new("title", false),
+                Key::new("launch", false),
+                Key::new("icon", true),
+            ])
         } else {
             Err(Error::UnknownSection(section.to_owned()))
         }
@@ -29,12 +35,9 @@ impl ConfigBuilder for EntryBuilder {
         }
 
         match key.trim() {
-            "title" => {
-                self.title = Some(value.to_owned());
-            }
-            "launch" => {
-                self.launch = Some(value.to_owned());
-            }
+            "title" => self.title = Some(value.to_owned()),
+            "launch" => self.launch = Some(value.to_owned()),
+            "icon" => self.icon = Some(find_icon(value)?),
             _ => return Err(Error::UnknownKey(key.to_owned())),
         };
         Ok(())
@@ -44,6 +47,43 @@ impl ConfigBuilder for EntryBuilder {
         MenuEntry {
             title: self.title.unwrap(),
             launch: self.launch.unwrap(),
+            icon: self.icon,
         }
     }
+}
+
+fn find_icon(name: &str) -> Result<PathBuf, Error> {
+    let mut icons = vec![];
+    for dir in ICON_DIRS {
+        icons.extend(find_icon_dir(name, PathBuf::from(&dir))?);
+    }
+    let icon_path = icons
+        .iter()
+        .filter_map(|ic| ic.metadata().ok().map(|met| (ic, met)))
+        .map(|(ic, met)| (ic, met.len()))
+        .max_by(|(_, siz1), (_, siz2)| siz1.cmp(siz2))
+        .ok_or(Error::IconNotFound(name.to_owned()))?
+        .0;
+    Ok(icon_path.clone())
+}
+
+fn find_icon_dir(name: &str, dir: PathBuf) -> Result<Vec<PathBuf>, Error> {
+    let mut icons = vec![];
+    for path in read_dir(&dir).map_err(|err| Error::read_dir(err, &dir))? {
+        let path = path.map_err(|err| Error::read_dir(err, &dir))?.path();
+        if path.is_dir() {
+            let dir_icons = find_icon_dir(name, path)?;
+            icons.extend(dir_icons);
+            continue;
+        }
+
+        if path.extension() == Some(OsStr::new("svg")) {
+            continue;
+        }
+
+        if path.file_stem() == Some(OsStr::new(name)) {
+            icons.push(path);
+        }
+    }
+    Ok(icons)
 }

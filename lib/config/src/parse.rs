@@ -1,17 +1,20 @@
-use crate::{AppConfig, EntryConfig, Error, colors::parse_color};
-use eframe::egui::Color32;
+use crate::{
+    AppConfig, EntryConfig, Error,
+    colors::{Color, parse_color},
+};
 use parser::{ConfigBuilder, Key, Section};
 
 #[derive(Default)]
 pub struct AppConfigBuilder {
-    entry_background: Option<Color32>,
-    padding: Option<i8>,
-    text_color: Option<Color32>,
-    border_radius: Option<u8>,
+    entry_background: Option<Color>,
+    padding: Option<f32>,
+    entry_text_color: Option<Color>,
+    border_radius: Option<f32>,
     text_size: Option<f32>,
     width: Option<f32>,
     height: Option<f32>,
-    background: Option<Color32>,
+    background: Option<Color>,
+    text_color: Option<Color>,
 }
 
 impl ConfigBuilder for AppConfigBuilder {
@@ -27,6 +30,7 @@ impl ConfigBuilder for AppConfigBuilder {
             "" => Ok(vec![
                 Key::new("background", true),
                 Key::new("padding", true),
+                Key::new("text-color", true),
             ]),
             "Entries" => Ok(vec![
                 Key::new("background", true),
@@ -46,16 +50,17 @@ impl ConfigBuilder for AppConfigBuilder {
             ("", "padding") => {
                 self.padding = Some(
                     value
-                        .parse::<i8>()
+                        .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
                 )
             }
+            ("", "text-color") => self.text_color = Some(parse_color(value)?),
             ("Entries", "background") => self.entry_background = Some(parse_color(value)?),
-            ("Entries", "text-color") => self.text_color = Some(parse_color(value)?),
+            ("Entries", "text-color") => self.entry_text_color = Some(parse_color(value)?),
             ("Entries", "border-radius") => {
                 self.border_radius = Some(
                     value
-                        .parse::<u8>()
+                        .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
                 )
             }
@@ -87,15 +92,16 @@ impl ConfigBuilder for AppConfigBuilder {
 
     fn build(self) -> Self::Output {
         AppConfig {
-            background: self.background.unwrap_or(Color32::BLACK),
-            padding: self.padding.unwrap_or(0),
+            background: self.background.unwrap_or(Color::BLACK),
+            text_color: self.text_color.unwrap_or(Color::WHITE),
+            padding: self.padding.unwrap_or(0.0),
             entries: EntryConfig {
-                background: self.entry_background.unwrap_or(Color32::TRANSPARENT),
-                text_color: self.text_color.unwrap_or(Color32::BLACK),
-                border_radius: self.border_radius.unwrap_or(0),
+                background: self.entry_background.unwrap_or(Color::TRANSPARENT),
+                text_color: self.entry_text_color.unwrap_or(Color::BLACK),
+                border_radius: self.border_radius.unwrap_or(0.0),
                 text_size: self.text_size.unwrap_or(12.0),
-                width: self.width,
-                height: self.height,
+                width: self.width.unwrap_or(100.0),
+                height: self.height.unwrap_or(100.0),
             },
         }
     }

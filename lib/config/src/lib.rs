@@ -1,26 +1,27 @@
-use eframe::egui::Color32;
 use parser::parse_file;
 use std::path::PathBuf;
 
 mod colors;
 mod errors;
 mod parse;
+pub use colors::Color;
 pub use errors::Error;
 use parse::AppConfigBuilder;
 
 pub struct EntryConfig {
-    pub background: Color32,
-    pub text_color: Color32,
+    pub background: Color,
+    pub text_color: Color,
     pub text_size: f32,
-    pub border_radius: u8,
-    pub width: Option<f32>,
-    pub height: Option<f32>,
+    pub border_radius: f32,
+    pub width: f32,
+    pub height: f32,
 }
 
 pub struct AppConfig {
     pub entries: EntryConfig,
-    pub background: Color32,
-    pub padding: i8,
+    pub background: Color,
+    pub text_color: Color,
+    pub padding: f32,
 }
 
 impl AppConfig {

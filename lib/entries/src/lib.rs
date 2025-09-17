@@ -1,14 +1,18 @@
 use parser::parse_file;
-use std::{fs::read_dir, path::PathBuf};
+use std::{fs::read_dir, path::PathBuf, process::Command};
 
 mod errors;
 mod parse;
 pub use errors::Error;
 use parse::EntryBuilder;
 
+pub const ICON_DIRS: [&str; 2] = ["/usr/share/pixmaps", "/usr/share/icons"];
+
+#[derive(Debug)]
 pub struct MenuEntry {
     pub title: String,
     pub launch: String,
+    pub icon: Option<PathBuf>,
 }
 
 impl MenuEntry {

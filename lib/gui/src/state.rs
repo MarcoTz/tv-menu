@@ -1,7 +1,13 @@
-use crate::{CONFIG_PATH, ENTRY_PATH, EntryWidget, Error};
+use crate::{ENTRY_PATH, EntryWidget, Error};
 use config::AppConfig;
 use entries::MenuEntry;
-use iced::widget::{Column, Row};
+use iced::{
+    Length,
+    widget::{
+        Column, Row, Scrollable,
+        scrollable::{Direction, Scrollbar},
+    },
+};
 use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
@@ -30,7 +36,7 @@ impl MenuState {
         })
     }
 
-    pub fn view(&self) -> Column<'_, Message> {
+    pub fn view(&self) -> Scrollable<'_, Message> {
         let widgets_per_col = if let Some(cols) = self.config.columns {
             cols as f32
         } else {
@@ -57,8 +63,16 @@ impl MenuState {
         if num_elements != 0 {
             rows.push(current_row.into());
         }
-        Column::from_vec(rows)
-            .padding(self.config.padding)
-            .spacing(self.config.row_gap)
+        Scrollable::new(
+            Column::from_vec(rows)
+                .padding(self.config.padding)
+                .spacing(self.config.row_gap),
+        )
+        .direction(Direction::Both {
+            vertical: Scrollbar::new(),
+            horizontal: Scrollbar::new(),
+        })
+        .width(Length::Fill)
+        .height(Length::Fill)
     }
 }

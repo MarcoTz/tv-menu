@@ -1,8 +1,8 @@
 use config::AppConfig;
 use entries::launch_command;
 use iced::{
-    Color, Task, application, application::Appearance, event, event::Event, widget::Column, window,
-    window::Settings,
+    Color, Task, application, application::Appearance, event, event::Event, widget::Scrollable,
+    window, window::Settings,
 };
 use std::{path::PathBuf, process::exit};
 
@@ -83,7 +83,7 @@ fn update(state: &mut MenuState, msg: Message) {
         Message::Resized { height, width } => state.window_size = (width, height),
     }
 }
-fn view(state: &MenuState) -> Column<'_, Message> {
+fn view(state: &MenuState) -> Scrollable<'_, Message> {
     state.view()
 }
 

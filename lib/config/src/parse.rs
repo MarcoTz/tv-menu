@@ -18,6 +18,8 @@ pub struct AppConfigBuilder {
     text_color: Option<Color>,
     height: Option<f32>,
     width: Option<f32>,
+    column_gap: Option<f32>,
+    row_gap: Option<f32>,
 }
 
 impl ConfigBuilder for AppConfigBuilder {
@@ -37,6 +39,8 @@ impl ConfigBuilder for AppConfigBuilder {
                 Key::new("columns", true),
                 Key::new("height", true),
                 Key::new("width", true),
+                Key::new("column-gap", true),
+                Key::new("row-gap", true),
             ]),
             "Entries" => Ok(vec![
                 Key::new("background", true),
@@ -79,6 +83,20 @@ impl ConfigBuilder for AppConfigBuilder {
                 self.columns = Some(
                     value
                         .parse::<u64>()
+                        .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
+                )
+            }
+            ("", "row-gap") => {
+                self.row_gap = Some(
+                    value
+                        .parse::<f32>()
+                        .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
+                )
+            }
+            ("", "column-gap") => {
+                self.column_gap = Some(
+                    value
+                        .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
                 )
             }
@@ -125,6 +143,8 @@ impl ConfigBuilder for AppConfigBuilder {
             columns: self.columns,
             height: self.height.unwrap_or(0.0),
             width: self.width.unwrap_or(0.0),
+            column_gap: self.column_gap.unwrap_or(10.0),
+            row_gap: self.row_gap.unwrap_or(10.0),
             entries: EntryConfig {
                 background: self.entry_background.unwrap_or(Color::TRANSPARENT),
                 text_color: self.entry_text_color.unwrap_or(Color::BLACK),

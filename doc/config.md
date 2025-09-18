@@ -17,8 +17,12 @@ sections begin. Here, the following keys are supported
 - `text-color:Color` - The text color of the window, this does not apply to,
   defaults to white entries
 - `padding:f32` - The padding of the window, defaults to `0`
-- `columns:u64` - Maximum number of columns per row, defaults to the current
-  window size
+- `columns:u64` - Maximum number of columns per row, by default calculated from
+  the window size
+- `height:f32` - The window height, defaults to `800`
+- `width: f32` - The window width, defaults to `600`
+- `column-gap:f32` - Gap between columns, defaults to `10`
+- `row-gap:f32` - Gap between rows, defaults to `10`
 
 ### `[Entries]`
 

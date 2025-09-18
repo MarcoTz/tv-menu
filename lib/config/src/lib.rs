@@ -25,6 +25,8 @@ pub struct AppConfig {
     pub padding: f32,
     pub height: f32,
     pub width: f32,
+    pub column_gap: f32,
+    pub row_gap: f32,
 }
 
 impl AppConfig {

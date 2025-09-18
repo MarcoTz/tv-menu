@@ -7,6 +7,7 @@ use parser::{ConfigBuilder, Key, Section};
 #[derive(Default)]
 pub struct AppConfigBuilder {
     entry_background: Option<Color>,
+    entry_background_active: Option<Color>,
     entry_text_color: Option<Color>,
     entry_border_radius: Option<f32>,
     entry_text_size: Option<f32>,
@@ -44,6 +45,7 @@ impl ConfigBuilder for AppConfigBuilder {
             ]),
             "Entries" => Ok(vec![
                 Key::new("background", true),
+                Key::new("background-active", true),
                 Key::new("text-color", true),
                 Key::new("border-radius", true),
                 Key::new("text-size", true),
@@ -101,6 +103,9 @@ impl ConfigBuilder for AppConfigBuilder {
                 )
             }
             ("Entries", "background") => self.entry_background = Some(parse_color(value)?),
+            ("Entries", "background-active") => {
+                self.entry_background_active = Some(parse_color(value)?)
+            }
             ("Entries", "text-color") => self.entry_text_color = Some(parse_color(value)?),
             ("Entries", "border-radius") => {
                 self.entry_border_radius = Some(
@@ -147,6 +152,7 @@ impl ConfigBuilder for AppConfigBuilder {
             row_gap: self.row_gap.unwrap_or(10.0),
             entries: EntryConfig {
                 background: self.entry_background.unwrap_or(Color::TRANSPARENT),
+                background_active: self.entry_background_active.unwrap_or(Color::WHITE),
                 text_color: self.entry_text_color.unwrap_or(Color::BLACK),
                 border_radius: self.entry_border_radius.unwrap_or(0.0),
                 text_size: self.entry_text_size.unwrap_or(12.0),

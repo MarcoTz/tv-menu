@@ -30,6 +30,8 @@ The `Entries` section defines how entries are displayed in the menu. Currently,
 the following keys are supported
 
 - `background:Color` - The background color of an entry, defaults to transparent
+- `background-active:Color` - The background color of the selected entry,
+  defaults to white
 - `text-color:Color` - The text color of an entry, defaults to transparent
 - `border-radius:u8` - The border radius of an entry, defaults to `0`
 - `height:f32` - The height of an entry, only works if `entry-width` is also

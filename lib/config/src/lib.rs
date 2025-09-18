@@ -10,6 +10,7 @@ use parse::AppConfigBuilder;
 
 pub struct EntryConfig {
     pub background: Color,
+    pub background_active: Color,
     pub text_color: Color,
     pub text_size: f32,
     pub border_radius: f32,

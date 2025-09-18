@@ -13,21 +13,21 @@ impl Color {
         red: 0,
         green: 0,
         blue: 0,
-        alpha: 0,
+        alpha: 255,
     };
 
     pub const WHITE: Color = Color {
         red: 255,
         green: 255,
         blue: 255,
-        alpha: 0,
+        alpha: 255,
     };
 
     pub const TRANSPARENT: Color = Color {
         red: 0,
         green: 0,
         blue: 0,
-        alpha: 255,
+        alpha: 0,
     };
 
     pub fn rgb(r: u8, g: u8, b: u8) -> Color {

@@ -1,15 +1,17 @@
 use config::AppConfig;
 use entries::launch_command;
 use iced::{
-    Color, Task, application, application::Appearance, event, event::Event, widget::Scrollable,
-    window, window::Settings,
+    Color, Task, application, application::Appearance, event, event::Event, keyboard,
+    widget::Scrollable, window, window::Settings,
 };
 use std::{path::PathBuf, process::exit};
 
 mod errors;
+mod events;
 mod menu_widget;
 mod state;
 pub use errors::Error;
+use events::update;
 use menu_widget::EntryWidget;
 use state::{MenuState, Message};
 
@@ -44,6 +46,9 @@ pub fn run_app() -> Result<(), Error> {
                     width: size.width,
                     height: size.height,
                 }),
+                Event::Keyboard(keyboard::Event::KeyPressed { key, .. }) => {
+                    Some(Message::KeyPress(key))
+                }
                 _ => None,
             })
         });
@@ -74,15 +79,6 @@ where
     }
 }
 
-fn update(state: &mut MenuState, msg: Message) {
-    match msg {
-        Message::Launch(cmd) => match launch_command(&cmd).spawn() {
-            Ok(child) => std::mem::forget(child),
-            Err(err) => eprintln!("Could not launch {cmd}:\n{err}"),
-        },
-        Message::Resized { height, width } => state.window_size = (width, height),
-    }
-}
 fn view(state: &MenuState) -> Scrollable<'_, Message> {
     state.view()
 }

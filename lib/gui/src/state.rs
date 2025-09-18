@@ -3,6 +3,7 @@ use config::AppConfig;
 use entries::MenuEntry;
 use iced::{
     Length,
+    keyboard::Key,
     widget::{
         Column, Row, Scrollable,
         scrollable::{Direction, Scrollbar},
@@ -14,11 +15,13 @@ use std::path::PathBuf;
 pub enum Message {
     Launch(String),
     Resized { width: f32, height: f32 },
+    KeyPress(Key),
 }
 pub struct MenuState {
     pub config: AppConfig,
     pub window_size: (f32, f32),
-    entries: Vec<MenuEntry>,
+    pub entries: Vec<MenuEntry>,
+    pub selected_index: usize,
 }
 
 impl MenuState {
@@ -33,26 +36,32 @@ impl MenuState {
             window_size: (window_width, window_height),
             config,
             entries,
+            selected_index: 0,
         })
     }
 
-    pub fn view(&self) -> Scrollable<'_, Message> {
-        let widgets_per_col = if let Some(cols) = self.config.columns {
-            cols as f32
+    pub fn widgets_per_col(&self) -> u64 {
+        if let Some(cols) = self.config.columns {
+            cols
         } else {
-            (self.window_size.0 - self.config.padding)
-                / (self.config.entries.width + self.config.column_gap)
-        };
+            ((self.window_size.0 - self.config.padding)
+                / (self.config.entries.width + self.config.column_gap))
+                .floor() as u64
+        }
+    }
+
+    pub fn view(&self) -> Scrollable<'_, Message> {
+        let widgets_per_col = self.widgets_per_col();
         let mut rows = vec![];
         let mut current_row = Row::new()
             .padding(self.config.padding)
             .spacing(self.config.column_gap);
         let mut num_elements = 0;
-        for entry in self.entries.iter() {
-            let button = EntryWidget::new(entry, &self.config).view();
+        for (ind, entry) in self.entries.iter().enumerate() {
+            let button = EntryWidget::new(entry, &self.config, ind == self.selected_index).view();
             current_row = current_row.push(button);
             num_elements += 1;
-            if num_elements >= widgets_per_col.floor() as u64 {
+            if num_elements >= widgets_per_col {
                 rows.push(current_row.into());
                 num_elements = 0;
                 current_row = Row::new()

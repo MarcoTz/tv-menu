@@ -8,6 +8,7 @@ use iced::{
 use std::path::PathBuf;
 
 pub struct EntryWidget {
+    active: bool,
     title: String,
     launch: String,
     icon: Option<PathBuf>,
@@ -16,12 +17,14 @@ pub struct EntryWidget {
     width: f32,
     text_color: Color,
     background: Color,
+    background_active: Color,
     border_radius: f32,
 }
 
 impl EntryWidget {
-    pub fn new(entry: &MenuEntry, conf: &AppConfig) -> EntryWidget {
+    pub fn new(entry: &MenuEntry, conf: &AppConfig, active: bool) -> EntryWidget {
         EntryWidget {
+            active,
             title: entry.title.clone(),
             launch: entry.launch.clone(),
             icon: entry.icon.clone(),
@@ -30,6 +33,7 @@ impl EntryWidget {
             width: conf.entries.width,
             text_color: to_color(&conf.entries.text_color),
             background: to_color(&conf.entries.background),
+            background_active: to_color(&conf.entries.background_active),
             border_radius: conf.entries.border_radius,
         }
     }
@@ -49,10 +53,15 @@ impl EntryWidget {
             .width(self.width)
             .push(image)
             .push(title);
+        let background = if self.active {
+            self.background_active
+        } else {
+            self.background
+        };
         let container = Container::new(column).style(move |_| {
             container::Style::default()
                 .color(self.text_color)
-                .background(self.background)
+                .background(background)
                 .border(Border::default().rounded(self.border_radius))
         });
         Button::new(container)

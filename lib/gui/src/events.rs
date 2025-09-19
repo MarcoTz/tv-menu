@@ -14,6 +14,7 @@ pub fn update(state: &mut MenuState, msg: Message) {
         Message::Launch(cmd) => launch_entry(&cmd),
         Message::Resized { height, width } => state.window_size = (width, height),
         Message::KeyPress(key) => handle_key(state, key),
+        Message::FilterChanged(filter) => update_filter(state, filter),
     };
 }
 
@@ -52,4 +53,21 @@ fn handle_key(state: &mut MenuState, key: Key) {
         }
         _ => (),
     }
+}
+
+fn update_filter(state: &mut MenuState, filter_value: String) {
+    state.filter_value = filter_value.clone();
+    state.disabled_indices.clear();
+    for (ind, entry) in state.entries.iter().enumerate() {
+        if !match_strings(&entry.title, &filter_value) {
+            state.disabled_indices.push(ind);
+        }
+    }
+}
+
+fn match_strings(title: &str, filter: &str) -> bool {
+    title
+        .to_lowercase()
+        .trim()
+        .contains(filter.to_lowercase().trim())
 }

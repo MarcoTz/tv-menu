@@ -1,8 +1,7 @@
 use config::AppConfig;
-use entries::launch_command;
 use iced::{
-    Color, Task, application, application::Appearance, event, event::Event, keyboard,
-    widget::Scrollable, window, window::Settings,
+    Color, Element, Task, application, application::Appearance, event, event::Event, keyboard,
+    window, window::Settings,
 };
 use std::{path::PathBuf, process::exit};
 
@@ -79,8 +78,8 @@ where
     }
 }
 
-fn view(state: &MenuState) -> Scrollable<'_, Message> {
-    state.view()
+fn view(state: &MenuState) -> Element<'_, Message> {
+    state.view().into()
 }
 
 pub fn to_color(color: &config::Color) -> Color {

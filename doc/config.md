@@ -16,6 +16,7 @@ sections begin. Here, the following keys are supported
 - `background:Color` - The background color of the window, defaults to black
 - `text-color:Color` - The text color of the window, this does not apply to,
   defaults to white entries
+- `text-size: f32` - Text size inside the window, does not apply to entries
 - `padding:f32` - The padding of the window, defaults to `0`
 - `columns:u64` - Maximum number of columns per row, by default calculated from
   the window size

@@ -22,6 +22,7 @@ pub struct AppConfig {
     pub entries: EntryConfig,
     pub background: Color,
     pub text_color: Color,
+    pub text_size: f32,
     pub columns: Option<u64>,
     pub padding: f32,
     pub height: f32,

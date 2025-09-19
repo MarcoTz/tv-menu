@@ -17,6 +17,7 @@ pub struct AppConfigBuilder {
     padding: Option<f32>,
     background: Option<Color>,
     text_color: Option<Color>,
+    text_size: Option<f32>,
     height: Option<f32>,
     width: Option<f32>,
     column_gap: Option<f32>,
@@ -37,6 +38,7 @@ impl ConfigBuilder for AppConfigBuilder {
                 Key::new("background", true),
                 Key::new("padding", true),
                 Key::new("text-color", true),
+                Key::new("text-size", true),
                 Key::new("columns", true),
                 Key::new("height", true),
                 Key::new("width", true),
@@ -67,6 +69,13 @@ impl ConfigBuilder for AppConfigBuilder {
                 )
             }
             ("", "text-color") => self.text_color = Some(parse_color(value)?),
+            ("", "text-size") => {
+                self.text_size = Some(
+                    value
+                        .parse::<f32>()
+                        .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
+                )
+            }
             ("", "height") => {
                 self.height = Some(
                     value
@@ -144,6 +153,7 @@ impl ConfigBuilder for AppConfigBuilder {
         AppConfig {
             background: self.background.unwrap_or(Color::BLACK),
             text_color: self.text_color.unwrap_or(Color::WHITE),
+            text_size: self.text_size.unwrap_or(12.0),
             padding: self.padding.unwrap_or(0.0),
             columns: self.columns,
             height: self.height.unwrap_or(0.0),

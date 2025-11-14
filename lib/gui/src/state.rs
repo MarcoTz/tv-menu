@@ -22,6 +22,10 @@ pub enum Message {
     Resized { width: f32, height: f32 },
     KeyPress(Key),
     FilterChanged(String),
+    Exit,
+    Lock,
+    Reboot,
+    Shutdown,
 }
 pub struct MenuState {
     pub config: AppConfig,
@@ -125,7 +129,8 @@ impl MenuState {
                 text_color: to_color(&self.config.entries.text_color),
                 border: Border::default().rounded(self.config.entries.border_radius),
                 ..Default::default()
-            });
+            })
+            .on_press(Message::Exit);
         let lock_button = Button::new(image(LOCK_BUTTON))
             .height(self.config.text_size * 2.0)
             .style(|_, _| button::Style {
@@ -133,7 +138,8 @@ impl MenuState {
                 text_color: to_color(&self.config.entries.text_color),
                 border: Border::default().rounded(self.config.entries.border_radius),
                 ..Default::default()
-            });
+            })
+            .on_press(Message::Lock);
         let reboot_button = Button::new(image(REBOOT_BUTTON))
             .height(self.config.text_size * 2.0)
             .style(|_, _| button::Style {
@@ -141,7 +147,8 @@ impl MenuState {
                 text_color: to_color(&self.config.entries.text_color),
                 border: Border::default().rounded(self.config.entries.border_radius),
                 ..Default::default()
-            });
+            })
+            .on_press(Message::Reboot);
         let shutdown_button = Button::new(image(SHUTDOWN_BUTTON))
             .height(self.config.text_size * 2.0)
             .style(|_, _| button::Style {
@@ -149,7 +156,8 @@ impl MenuState {
                 text_color: to_color(&self.config.entries.text_color),
                 border: Border::default().rounded(self.config.entries.border_radius),
                 ..Default::default()
-            });
+            })
+            .on_press(Message::Shutdown);
         Container::new(Row::from_vec(vec![
             lock_button.into(),
             shutdown_button.into(),

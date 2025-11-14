@@ -1,6 +1,7 @@
 use crate::{MenuState, Message};
 use entries::launch_command;
 use iced::keyboard::{Key, key::Named};
+use std::process::{Command, exit};
 
 fn launch_entry(cmd: &str, args: &[String]) {
     match launch_command(cmd, args).spawn() {
@@ -15,6 +16,25 @@ pub fn update(state: &mut MenuState, msg: Message) {
         Message::Resized { height, width } => state.window_size = (width, height),
         Message::KeyPress(key) => handle_key(state, &key),
         Message::FilterChanged(filter) => update_filter(state, &filter),
+        Message::Exit => exit(0),
+        Message::Lock => {
+            Command::new("loginctl")
+                .arg("lock-session")
+                .status()
+                .expect("Could not lock system");
+        }
+        Message::Reboot => {
+            Command::new("systemctl")
+                .arg("reboot")
+                .status()
+                .expect("Could not reboot system");
+        }
+        Message::Shutdown => {
+            Command::new("systemctl")
+                .arg("shutdown")
+                .status()
+                .expect("Could not shutdown system");
+        }
     }
 }
 

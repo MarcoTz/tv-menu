@@ -11,6 +11,7 @@ pub struct EntryWidget {
     active: bool,
     title: String,
     launch: String,
+    args: Vec<String>,
     icon: Option<PathBuf>,
     text_size: f32,
     height: f32,
@@ -22,11 +23,12 @@ pub struct EntryWidget {
 }
 
 impl EntryWidget {
-    pub fn new(entry: &MenuEntry, conf: &AppConfig, active: bool) -> EntryWidget {
-        EntryWidget {
+    pub fn new(entry: &MenuEntry, conf: &AppConfig, active: bool) -> Self {
+        Self {
             active,
             title: entry.title.clone(),
             launch: entry.launch.clone(),
+            args: entry.args.clone(),
             icon: entry.icon.clone(),
             text_size: conf.entries.text_size,
             height: conf.entries.height,
@@ -43,11 +45,11 @@ impl EntryWidget {
             .height(Length::Fixed(self.text_size))
             .width(Length::Fill)
             .center();
-        let image: Element<Message> = if let Some(ref icon) = self.icon {
-            image(icon).height(Length::Fill).width(Length::Fill).into()
-        } else {
-            text("").height(Length::Fill).width(Length::Fill).into()
-        };
+        let image: Element<Message> = self.icon.map_or_else(
+            || text("").height(Length::Fill).width(Length::Fill).into(),
+            |icon| image(icon).height(Length::Fill).width(Length::Fill).into(),
+        );
+
         let column = Column::new()
             .height(self.height)
             .width(self.width)
@@ -65,7 +67,7 @@ impl EntryWidget {
                 .border(Border::default().rounded(self.border_radius))
         });
         Button::new(container)
-            .on_press(Message::Launch(self.launch.to_owned()))
+            .on_press(Message::Launch(self.launch.clone(), self.args.clone()))
             .style(|_, _| button::Style::default())
     }
 }

@@ -35,46 +35,52 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn read_file(err: io::Error, path: &Path) -> Error {
-        Error::ReadFile {
+    #[must_use]
+    pub fn read_file(err: &io::Error, path: &Path) -> Self {
+        Self::ReadFile {
             path: path.to_path_buf(),
             reason: err.to_string(),
         }
     }
 
-    pub fn format(path: &Path, line_nr: usize, reason: &str) -> Error {
-        Error::InvalidFormat {
+    #[must_use]
+    pub fn format(path: &Path, line_nr: usize, reason: &str) -> Self {
+        Self::InvalidFormat {
             path: path.to_path_buf(),
             line_nr,
             reason: reason.to_owned(),
         }
     }
 
-    pub fn missing_key(path: &Path, section: &str, key: &str) -> Error {
-        Error::MissingKey {
+    #[must_use]
+    pub fn missing_key(path: &Path, section: &str, key: &str) -> Self {
+        Self::MissingKey {
             path: path.to_path_buf(),
             section: section.to_owned(),
             key: key.to_owned(),
         }
     }
 
-    pub fn missing_section(path: &Path, section: &str) -> Error {
-        Error::MissingSection {
+    #[must_use]
+    pub fn missing_section(path: &Path, section: &str) -> Self {
+        Self::MissingSection {
             path: path.to_path_buf(),
             section: section.to_owned(),
         }
     }
 
-    pub fn unexpected_keys(path: &Path, section: &str, keys: Vec<&String>) -> Error {
-        Error::UnexpectedKeys {
+    #[must_use]
+    pub fn unexpected_keys(path: &Path, section: &str, keys: Vec<&String>) -> Self {
+        Self::UnexpectedKeys {
             path: path.to_path_buf(),
             section: section.to_owned(),
             keys: keys.into_iter().cloned().collect(),
         }
     }
 
-    pub fn unexpected_sections(path: &Path, sections: Vec<&String>) -> Error {
-        Error::UnexpectedSections {
+    #[must_use]
+    pub fn unexpected_sections(path: &Path, sections: Vec<&String>) -> Self {
+        Self::UnexpectedSections {
             path: path.to_path_buf(),
             sections: sections.into_iter().cloned().collect(),
         }
@@ -83,7 +89,7 @@ impl Error {
 
 fn format_section(sec: &str) -> String {
     if sec.is_empty() {
-        "".to_owned()
+        String::new()
     } else {
         format!(" for section {sec}")
     }
@@ -92,42 +98,49 @@ fn format_section(sec: &str) -> String {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Error::ReadFile { path, reason } => {
-                write!(f, "Could not read file {path:?}:\n{reason}")
+            Self::ReadFile { path, reason } => {
+                write!(f, "Could not read file {}:\n{reason}", path.display())
             }
-            Error::InvalidFormat {
+            Self::InvalidFormat {
                 path,
                 line_nr,
                 reason,
             } => {
-                write!(f, "Could not parse line {line_nr} of {path:?}: {reason}")
-            }
-            Error::MissingKey { path, section, key } => {
                 write!(
                     f,
-                    "Missing key {key}{} in {path:?}",
-                    format_section(section)
+                    "Could not parse line {line_nr} of {}: {reason}",
+                    path.display()
                 )
             }
-            Error::MissingSection { path, section } => {
-                write!(f, "Missing section {section} in {path:?}")
+            Self::MissingKey { path, section, key } => {
+                write!(
+                    f,
+                    "Missing key {key}{} in {}",
+                    format_section(section),
+                    path.display()
+                )
             }
-            Error::UnexpectedKeys {
+            Self::MissingSection { path, section } => {
+                write!(f, "Missing section {section} in {}", path.display())
+            }
+            Self::UnexpectedKeys {
                 path,
                 section,
                 keys,
             } => {
                 write!(
                     f,
-                    "Unexpected keys {}{} in {path:?}",
+                    "Unexpected keys {}{} in {}",
                     keys.join(", "),
-                    format_section(section)
+                    format_section(section),
+                    path.display()
                 )
             }
-            Error::UnexpectedSections { path, sections } => {
+            Self::UnexpectedSections { path, sections } => {
                 write!(
                     f,
-                    "Unexpected sections {} in path {path:?}",
+                    "Unexpected sections {} in path {}",
+                    path.display(),
                     sections.join(", ")
                 )
             }

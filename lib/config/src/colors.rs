@@ -9,29 +9,34 @@ pub struct Color {
 }
 
 impl Color {
-    pub const BLACK: Color = Color {
+    /// Black, #000000ff;
+    pub const BLACK: Self = Self {
         red: 0,
         green: 0,
         blue: 0,
         alpha: 255,
     };
 
-    pub const WHITE: Color = Color {
+    /// White, #ffffffff;
+    pub const WHITE: Self = Self {
         red: 255,
         green: 255,
         blue: 255,
         alpha: 255,
     };
 
-    pub const TRANSPARENT: Color = Color {
+    /// Transparent, #00000000;
+    pub const TRANSPARENT: Self = Self {
         red: 0,
         green: 0,
         blue: 0,
         alpha: 0,
     };
 
-    pub fn rgb(r: u8, g: u8, b: u8) -> Color {
-        Color {
+    /// create Rgb color #rgbff
+    #[must_use]
+    pub const fn rgb(r: u8, g: u8, b: u8) -> Self {
+        Self {
             red: r,
             green: g,
             blue: b,
@@ -39,8 +44,10 @@ impl Color {
         }
     }
 
-    pub fn rgba(r: u8, g: u8, b: u8, a: u8) -> Color {
-        Color {
+    /// create rgba color #rgba
+    #[must_use]
+    pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
+        Self {
             red: r,
             green: g,
             blue: b,
@@ -50,7 +57,7 @@ impl Color {
 }
 
 pub fn parse_color(input: &str) -> Result<Color, Error> {
-    if input.starts_with("#") {
+    if input.starts_with('#') {
         parse_hex(input)
     } else if input.starts_with("rgba") {
         parse_rgba(input)
@@ -109,25 +116,25 @@ fn hex_to_digit(ch: char) -> Result<u8, Error> {
 fn parse_rgba(input: &str) -> Result<Color, Error> {
     let mut color = input.replace("rgba(", "");
     color.remove(color.len() - 1);
-    let mut parts = color.split(",");
+    let mut parts = color.split(',');
     let red = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     let green = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     let blue = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     let alpha = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     Ok(Color::rgba(red, green, blue, alpha))
@@ -136,20 +143,20 @@ fn parse_rgba(input: &str) -> Result<Color, Error> {
 fn parse_rgb(input: &str) -> Result<Color, Error> {
     let mut color = input.replace("rgb(", "");
     color.remove(color.len() - 1);
-    let mut parts = color.split(",");
+    let mut parts = color.split(',');
     let red = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     let green = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     let blue = parts
         .next()
-        .ok_or(Error::InvalidColor(input.to_owned()))?
+        .ok_or_else(|| Error::InvalidColor(input.to_owned()))?
         .parse::<u8>()
         .map_err(|_| Error::InvalidColor(input.to_owned()))?;
     Ok(Color::rgb(red, green, blue))

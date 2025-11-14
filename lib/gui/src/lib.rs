@@ -26,18 +26,22 @@ pub const CONFIG_NAMES: [&str; 4] = [
     "./tvmenu.conf",
 ];
 
+/// Run the app
+/// # Errors
+/// Returns an error if the config could not be loaded
+/// or when the [`iced::Application`] returns an error
 pub fn run_app() -> Result<(), Error> {
     let mut config = AppConfig::load(&CONFIG_NAMES)?;
     let mut window_settings = Settings::default();
-    if config.height != 0.0 {
-        window_settings.size.height = config.height;
-    } else {
+    if config.height == 0.0 {
         config.height = window_settings.size.height;
-    }
-    if config.width != 0.0 {
-        window_settings.size.width = config.width;
     } else {
+        window_settings.size.height = config.height;
+    }
+    if config.width == 0.0 {
         config.width = window_settings.size.width;
+    } else {
+        window_settings.size.width = config.width;
     }
 
     let (w, h) = (window_settings.size.width, window_settings.size.height);
@@ -91,11 +95,13 @@ fn view(state: &MenuState) -> Element<'_, Message> {
     state.view().into()
 }
 
+/// convert [`config::Color`] to [`Color`]
+#[must_use]
 pub fn to_color(color: &config::Color) -> Color {
     Color::from_rgba(
-        color.red as f32 / 255.0,
-        color.green as f32 / 255.0,
-        color.blue as f32 / 255.0,
-        color.alpha as f32 / 255.0,
+        f32::from(color.red) / 255.0,
+        f32::from(color.green) / 255.0,
+        f32::from(color.blue) / 255.0,
+        f32::from(color.alpha) / 255.0,
     )
 }

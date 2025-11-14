@@ -18,7 +18,7 @@ use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
 pub enum Message {
-    Launch(String),
+    Launch(String, Vec<String>),
     Resized { width: f32, height: f32 },
     KeyPress(Key),
     FilterChanged(String),
@@ -37,12 +37,12 @@ impl MenuState {
         config: AppConfig,
         window_width: f32,
         window_height: f32,
-    ) -> Result<MenuState, Error> {
+    ) -> Result<Self, Error> {
         let entry_path = PathBuf::from(ENTRY_PATH);
-        let entries = MenuEntry::load_dir(entry_path)?;
-        Ok(MenuState {
+        let entries = MenuEntry::load_dir(&entry_path)?;
+        Ok(Self {
             window_size: (window_width, window_height),
-            filter_value: "".to_owned(),
+            filter_value: String::new(),
             config,
             selected_index: 0,
             disabled_indices: Vec::with_capacity(entries.len()),
@@ -51,13 +51,14 @@ impl MenuState {
     }
 
     pub fn widgets_per_col(&self) -> u64 {
-        if let Some(cols) = self.config.columns {
-            cols
-        } else {
-            ((self.window_size.0 - self.config.padding)
-                / (self.config.entries.width + self.config.column_gap))
-                .floor() as u64
-        }
+        self.config.columns.map_or_else(
+            || {
+                ((self.window_size.0 - self.config.padding)
+                    / (self.config.entries.width + self.config.column_gap))
+                    .floor() as u64
+            },
+            |cols| cols,
+        )
     }
 
     pub fn view_filter(&self) -> Container<'_, Message> {
@@ -77,7 +78,7 @@ impl MenuState {
                 value: to_color(&self.config.text_color),
                 selection: to_color(&self.config.text_color),
             })
-            .on_input(|val| Message::FilterChanged(val));
+            .on_input(Message::FilterChanged);
         Container::new(Row::from_vec(vec![filter_label.into(), filter_input.into()]).spacing(10))
             .center_x(Length::Fill)
     }

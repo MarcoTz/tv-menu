@@ -66,7 +66,7 @@ impl ConfigBuilder for AppConfigBuilder {
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("", "text-color") => self.text_color = Some(parse_color(value)?),
             ("", "text-size") => {
@@ -74,46 +74,46 @@ impl ConfigBuilder for AppConfigBuilder {
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("", "height") => {
                 self.height = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("", "width") => {
                 self.width = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("", "columns") => {
                 self.columns = Some(
                     value
                         .parse::<u64>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("", "row-gap") => {
                 self.row_gap = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("", "column-gap") => {
                 self.column_gap = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("Entries", "background") => self.entry_background = Some(parse_color(value)?),
             ("Entries", "background-active") => {
-                self.entry_background_active = Some(parse_color(value)?)
+                self.entry_background_active = Some(parse_color(value)?);
             }
             ("Entries", "text-color") => self.entry_text_color = Some(parse_color(value)?),
             ("Entries", "border-radius") => {
@@ -121,28 +121,28 @@ impl ConfigBuilder for AppConfigBuilder {
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("Entries", "text-size") => {
                 self.entry_text_size = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("Entries", "width") => {
                 self.entry_width = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             ("Entries", "height") => {
                 self.entry_height = Some(
                     value
                         .parse::<f32>()
                         .map_err(|_| Error::InvalidNumber(value.to_owned()))?,
-                )
+                );
             }
             _ => return Err(Error::invalid_key(section, key)),
         }

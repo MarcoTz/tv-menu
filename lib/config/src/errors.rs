@@ -7,6 +7,8 @@ pub enum Error {
     InvalidNumber(String),
     InvalidKey { section: String, key: String },
     InvalidSection(String),
+    NoConfigFound(Vec<String>),
+    HomeDir { path: String, msg: String },
 }
 
 impl Error {
@@ -27,6 +29,14 @@ impl fmt::Display for Error {
             Error::InvalidSection(sec) => write!(f, "Not a valid section: {sec}"),
             Error::InvalidKey { section, key } => {
                 write!(f, "Not a valid key for section {section}: {key}")
+            }
+            Error::NoConfigFound(paths) => write!(
+                f,
+                "Could not find valid config file, searched:\n{}",
+                paths.join("\n")
+            ),
+            Error::HomeDir { path, msg } => {
+                write!(f, "Could not expand home directory for {path}:\n{msg}")
             }
         }
     }

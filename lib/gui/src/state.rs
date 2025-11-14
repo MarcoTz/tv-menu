@@ -1,4 +1,7 @@
-use crate::{ENTRY_PATH, EntryWidget, Error, to_color};
+use crate::{
+    ENTRY_PATH, EXIT_BUTTON, EntryWidget, Error, LOCK_BUTTON, REBOOT_BUTTON, SHUTDOWN_BUTTON,
+    to_color,
+};
 use config::AppConfig;
 use entries::MenuEntry;
 use iced::{
@@ -6,9 +9,9 @@ use iced::{
     alignment::Horizontal,
     keyboard::Key,
     widget::{
-        Column, Container, Row, Scrollable, Text, TextInput,
+        Button, Column, Container, Row, Scrollable, Text, TextInput, button, image,
         scrollable::{Direction, Scrollbar},
-        text_input::Style,
+        text_input,
     },
 };
 use std::path::PathBuf;
@@ -57,12 +60,12 @@ impl MenuState {
         }
     }
 
-    pub fn view(&self) -> Column<'_, Message> {
+    pub fn view_filter(&self) -> Container<'_, Message> {
         let filter_label = Text::new("Filter").size(self.config.text_size);
         let filter_input = TextInput::new(&self.filter_value, &self.filter_value)
             .size(self.config.text_size)
             .width(Length::Fixed(self.window_size.0 * 0.45))
-            .style(|_, _| Style {
+            .style(|_, _| text_input::Style {
                 background: Background::Color(to_color(&self.config.background)),
                 border: Border {
                     color: to_color(&self.config.text_color),
@@ -75,6 +78,11 @@ impl MenuState {
                 selection: to_color(&self.config.text_color),
             })
             .on_input(|val| Message::FilterChanged(val));
+        Container::new(Row::from_vec(vec![filter_label.into(), filter_input.into()]).spacing(10))
+            .center_x(Length::Fill)
+    }
+
+    pub fn view_menu(&self) -> Scrollable<'_, Message> {
         let widgets_per_col = self.widgets_per_col();
         let mut rows: Vec<Element<Message>> = vec![];
         let mut current_row = Row::new().spacing(self.config.column_gap);
@@ -95,24 +103,66 @@ impl MenuState {
         if num_elements != 0 {
             rows.push(current_row.into());
         }
+        Scrollable::new(
+            Column::from_vec(rows)
+                .padding(self.config.padding)
+                .spacing(self.config.row_gap),
+        )
+        .direction(Direction::Both {
+            vertical: Scrollbar::new(),
+            horizontal: Scrollbar::new(),
+        })
+        .width(Length::Fill)
+        .height(Length::Fill)
+    }
+
+    fn view_power(&self) -> Container<'_, Message> {
+        let exit_button = Button::new(image(EXIT_BUTTON))
+            .height(self.config.text_size * 2.0)
+            .style(|_, _| button::Style {
+                background: Some(Background::Color(to_color(&self.config.entries.background))),
+                text_color: to_color(&self.config.entries.text_color),
+                border: Border::default().rounded(self.config.entries.border_radius),
+                ..Default::default()
+            });
+        let lock_button = Button::new(image(LOCK_BUTTON))
+            .height(self.config.text_size * 2.0)
+            .style(|_, _| button::Style {
+                background: Some(Background::Color(to_color(&self.config.entries.background))),
+                text_color: to_color(&self.config.entries.text_color),
+                border: Border::default().rounded(self.config.entries.border_radius),
+                ..Default::default()
+            });
+        let reboot_button = Button::new(image(REBOOT_BUTTON))
+            .height(self.config.text_size * 2.0)
+            .style(|_, _| button::Style {
+                background: Some(Background::Color(to_color(&self.config.entries.background))),
+                text_color: to_color(&self.config.entries.text_color),
+                border: Border::default().rounded(self.config.entries.border_radius),
+                ..Default::default()
+            });
+        let shutdown_button = Button::new(image(SHUTDOWN_BUTTON))
+            .height(self.config.text_size * 2.0)
+            .style(|_, _| button::Style {
+                background: Some(Background::Color(to_color(&self.config.entries.background))),
+                text_color: to_color(&self.config.entries.text_color),
+                border: Border::default().rounded(self.config.entries.border_radius),
+                ..Default::default()
+            });
+        Container::new(Row::from_vec(vec![
+            lock_button.into(),
+            shutdown_button.into(),
+            reboot_button.into(),
+            exit_button.into(),
+        ]))
+        .center_x(Length::Fill)
+    }
+
+    pub fn view(&self) -> Column<'_, Message> {
         Column::from_vec(vec![
-            Container::new(
-                Row::from_vec(vec![filter_label.into(), filter_input.into()]).spacing(10),
-            )
-            .center_x(Length::Fill)
-            .into(),
-            Scrollable::new(
-                Column::from_vec(rows)
-                    .padding(self.config.padding)
-                    .spacing(self.config.row_gap),
-            )
-            .direction(Direction::Both {
-                vertical: Scrollbar::new(),
-                horizontal: Scrollbar::new(),
-            })
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into(),
+            self.view_filter().into(),
+            self.view_menu().into(),
+            self.view_power().into(),
         ])
         .align_x(Horizontal::Center)
         .padding(self.config.padding)

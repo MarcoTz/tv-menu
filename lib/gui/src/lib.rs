@@ -16,6 +16,10 @@ use state::{MenuState, Message};
 
 pub const ENTRY_PATH: &str = "entries";
 pub const CONFIG_PATH: &str = "tvmenu.conf";
+pub const EXIT_BUTTON: &str = "assets/exit.png";
+pub const LOCK_BUTTON: &str = "assets/lock.png";
+pub const REBOOT_BUTTON: &str = "assets/reboot.png";
+pub const SHUTDOWN_BUTTON: &str = "assets/shutdown.png";
 
 pub fn run_app() -> Result<(), Error> {
     let mut config = AppConfig::from_file(PathBuf::from(CONFIG_PATH))?;

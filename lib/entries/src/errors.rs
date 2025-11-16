@@ -35,7 +35,15 @@ impl fmt::Display for Error {
             Self::UnknownKey(key) => write!(f, "Menu Entry cannot have key {key}"),
             Self::IconNotFound(name) => write!(f, "Could not find icon {name}"),
             Self::Parser(err) => err.fmt(f),
-            Self::NoEntriesFound => f.write_str("Could not find any menu entries"),
+            Self::NoEntriesFound { prev_errors } => write!(
+                f,
+                "Could not find any menu entries, tried:\n{}",
+                prev_errors
+                    .iter()
+                    .map(|(dir, err)| format!("{}: {err}", dir.display()))
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ),
             Self::Config(err) => err.fmt(f),
         }
     }

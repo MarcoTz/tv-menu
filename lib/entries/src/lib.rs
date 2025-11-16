@@ -34,14 +34,16 @@ impl MenuEntry {
     /// # Errors
     /// Returns an error if none of the directories could be loaded
     pub fn load_dirs(dirs: &[&str]) -> Result<Vec<Self>, Error> {
+        let mut errs = vec![];
         for dir in dirs {
             let dir_path = expand_user(dir)?;
             let res = Self::load_dir(&dir_path);
-            if res.is_ok() {
-                return res;
+            match res {
+                Ok(slfs) => return Ok(slfs),
+                Err(err) => errs.push((dir_path, err)),
             }
         }
-        Err(Error::NoEntriesFound)
+        Err(Error::NoEntriesFound { prev_errors: errs })
     }
 
     /// Load entries from a given directory

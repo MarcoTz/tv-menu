@@ -11,7 +11,7 @@ pub enum Error {
     IconNotFound(String),
     Parser(parser::Error),
     Config(config::Error),
-    NoEntriesFound,
+    NoEntriesFound { prev_errors: Vec<(PathBuf, Self)> },
 }
 
 impl Error {

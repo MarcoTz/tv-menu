@@ -1,5 +1,5 @@
 use crate::{
-    ENTRY_PATH, EXIT_BUTTON, EntryWidget, Error, LOCK_BUTTON, REBOOT_BUTTON, SHUTDOWN_BUTTON,
+    ENTRY_PATHS, EXIT_BUTTON, EntryWidget, Error, LOCK_BUTTON, REBOOT_BUTTON, SHUTDOWN_BUTTON,
     to_color,
 };
 use config::AppConfig;
@@ -14,25 +14,41 @@ use iced::{
         text_input,
     },
 };
-use std::path::PathBuf;
 
+/// Messages sent to [`crate::update`]
 #[derive(Debug, Clone)]
 pub enum Message {
+    /// Launch an app with command and arguments
     Launch(String, Vec<String>),
+    /// Window was resized
     Resized { width: f32, height: f32 },
+    /// A Key was pressed
     KeyPress(Key),
+    /// Contents of the filter input changed
     FilterChanged(String),
+    /// Exit the app
     Exit,
+    /// Lock the screen
     Lock,
+    /// Reboot the system
     Reboot,
+    /// Shutdown the system
     Shutdown,
 }
+
+/// State of the App
 pub struct MenuState {
+    /// configuration
     pub config: AppConfig,
+    /// current window size
     pub window_size: (f32, f32),
+    /// menu entries
     pub entries: Vec<MenuEntry>,
+    /// currently selected item
     pub selected_index: usize,
+    /// invisible entries (used for filtering)
     pub disabled_indices: Vec<usize>,
+    /// current value of the filter input
     pub filter_value: String,
 }
 
@@ -42,8 +58,7 @@ impl MenuState {
         window_width: f32,
         window_height: f32,
     ) -> Result<Self, Error> {
-        let entry_path = PathBuf::from(ENTRY_PATH);
-        let entries = MenuEntry::load_dir(&entry_path)?;
+        let entries = MenuEntry::load_dirs(&ENTRY_PATHS)?;
         Ok(Self {
             window_size: (window_width, window_height),
             filter_value: String::new(),

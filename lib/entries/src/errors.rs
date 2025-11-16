@@ -10,6 +10,8 @@ pub enum Error {
     UnknownKey(String),
     IconNotFound(String),
     Parser(parser::Error),
+    Config(config::Error),
+    NoEntriesFound,
 }
 
 impl Error {
@@ -33,6 +35,8 @@ impl fmt::Display for Error {
             Self::UnknownKey(key) => write!(f, "Menu Entry cannot have key {key}"),
             Self::IconNotFound(name) => write!(f, "Could not find icon {name}"),
             Self::Parser(err) => err.fmt(f),
+            Self::NoEntriesFound => f.write_str("Could not find any menu entries"),
+            Self::Config(err) => err.fmt(f),
         }
     }
 }
@@ -42,5 +46,11 @@ impl std::error::Error for Error {}
 impl From<parser::Error> for Error {
     fn from(err: parser::Error) -> Self {
         Self::Parser(err)
+    }
+}
+
+impl From<config::Error> for Error {
+    fn from(err: config::Error) -> Self {
+        Self::Config(err)
     }
 }

@@ -14,7 +14,7 @@ use events::update;
 use menu_widget::EntryWidget;
 use state::{MenuState, Message};
 
-pub const ENTRY_PATH: &str = "entries";
+pub const ENTRY_PATHS: [&str; 2] = ["~/.config/tvmenu", "./entries"];
 pub const EXIT_BUTTON: &str = "assets/exit.png";
 pub const LOCK_BUTTON: &str = "assets/lock.png";
 pub const REBOOT_BUTTON: &str = "assets/reboot.png";
